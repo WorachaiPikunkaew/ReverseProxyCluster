@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-proxy
+  namespace: mtls-proxy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-proxy
+  template:
+    metadata:
+      labels:
+        app: nginx-proxy
+    spec:
+      # Map web1/web2 hostnames to their Docker-network IPs
+      hostAliases:
+        - ip: "172.18.0.2"     # <-- replace with 172.18.0.2
+          hostnames: ["web1"]
+        - ip: "172.18.0.3"     # <-- replace with 172.18.0.3
+          hostnames: ["web2"]
+      containers:
+        - name: nginx
+          image: nginx:stable
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+            - name: certs
+              mountPath: /etc/nginx/certs
+              readOnly: true
+          readinessProbe:
+            tcpSocket:
+              port: 443
+            initialDelaySeconds: 3
+            periodSeconds: 5
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: proxy-nginx-conf
+        - name: certs
+          secret:
+            secretName: proxy-certs
