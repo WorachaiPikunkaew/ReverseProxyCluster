@@ -48,4 +48,20 @@ EOF
 openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
   -out client.crt -days 825 -sha256 -extfile client.ext
 
+# ---- 5. Wildcard server cert for reverse proxy (public-facing) ----
+openssl genrsa -out proxy.key 2048
+openssl req -new -key proxy.key -subj "/CN=*.example.net" -out proxy.csr
+cat > proxy.ext <<EOF
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = *.example.net
+DNS.2 = example.net
+EOF
+openssl x509 -req -in proxy.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
+  -out proxy.crt -days 825 -sha256 -extfile proxy.ext
+
+
 echo "Certificates generated in $(pwd)"

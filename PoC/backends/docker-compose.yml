@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   web1:
     image: nginx:stable
@@ -27,4 +25,4 @@ services:
 
 networks:
   mtls-net:
-    driver: bridge
+    external: true
