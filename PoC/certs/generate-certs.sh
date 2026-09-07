@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 cd "$(dirname "$0")"
+find . ! -name $(basename "$0") -type f -exec rm {} +
+ls
 
 # ---- 1. Create CA ----
 openssl genrsa -out ca.key 4096

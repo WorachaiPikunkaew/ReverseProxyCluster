@@ -1,3 +1,0 @@
-backends/certs/*
-!backends/certs/generate-certs.sh
-!backends/certs/rm-certs.sh
