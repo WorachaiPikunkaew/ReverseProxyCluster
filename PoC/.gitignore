@@ -1,1 +1,3 @@
-./01-secret.certs.yaml
+01-secret-certs.yaml
+certs/*
+!certs/generate-certs.sh
